@@ -1,0 +1,125 @@
+<html>
+	<head>
+		<title>Página inicial</title>
+		<style>
+			table {
+				align-items: center;
+				border-collapse: collapse;
+			}
+
+			td, th {
+				border: 2px solid #000;
+				text-align: center;
+				padding: 9px;
+			}
+
+			div.container {
+				display: flex;
+				align-itens: center;
+				justify-content: space-around;
+			}
+
+			button {
+				margin-top: 15px;
+				margin-left: 15px;
+				margin-right: 15px;
+			}
+
+			input {
+				margin-top: 15px;
+				margin-left: 15px;
+				margin-right: 15px;
+			}
+		</style>
+		<script src="/socket.io/socket.io.js"></script>
+	</head>
+	<body>
+		<div>
+			<div>
+				<center>
+					<a href="/categorias">Categorias</a>
+					<br>
+					<a href="/loja">Lojas</a>
+				</center>
+			</div>
+			<div class="container">
+				<table id="searchTable"></table>
+			</div>
+			<br>
+			<div class="container">
+				<form id="add_prod">
+					<center>
+						Adicionar produto
+					</center>
+					<input autocomplete="off"id="add_prod_name" placeholder="Nome do produto">
+					<br>
+					<input autocomplete="off"id="add_prod_cats" placeholder="Categoria(s) do produto">
+					<br>
+					<input autocomplete="off"id="add_prod_price" placeholder="Preço do produto">
+					<br>
+					<input autocomplete="off"id="add_prod_quant" placeholder="Estoque do produto">
+					<br>
+					<center>
+						<button>Adicionar</button>
+					</center>
+				</form>
+				<form id="update_prod">
+					<center>
+					Atualizar produto
+					</center>
+					<input autocomplete="off"id="up_prod_id" placeholder="Id do produto">
+					<br>
+					<input autocomplete="off"id="up_prod_name" placeholder="Nome do produto">
+					<br>
+					<input autocomplete="off"id="up_prod_price" placeholder="Preço do produto">
+					<br>
+					<input autocomplete="off"id="up_prod_quant" placeholder="Quantidade do produto">
+					<br>
+					<input autocomplete="off"id="up_prod_cats" placeholder="Categoria(s) do produto">
+					<br>
+					<center>
+					<button>Atualizar</button>
+					</center>
+				</form>
+				<form id="rm_prod">
+					<center>
+					Remover produto
+					</center>
+					<input autocomplete="off"id="rm_prod_id" placeholder="Id do produto">
+					<br>
+					<center>
+						<button>Remover</button>
+					</center>
+				</form>
+			</div>
+		</div>
+		<script type="module">
+			import createTable from './table.js';
+			import createSelect from './select.js';
+			import startButtons from './index.js';
+			
+			const socket = io();
+			startButtons(socket);
+
+			socket.emit('getAllProducts');
+
+			socket.on('getAll', (rows) =>{
+				const $searchTable = document.getElementById('searchTable');
+				const { table, row_data } = createTable(
+					[
+						['prod_id', 'id'],
+						['prod_name', 'Nome'],
+						['prod_cat', 'categoria'],
+						['prod_quant', 'quantidade'],
+						['prod_preco', 'preço'],
+					],
+					rows
+				);
+				$searchTable.innerHTML = table;
+				
+				createSelect(row_data);
+			});
+
+		</script>
+	</body>
+</html>

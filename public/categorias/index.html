@@ -1,0 +1,90 @@
+<html>
+	<head>
+		<title>Categorias</title>
+
+		<style>
+			table {
+				align-items: center;
+				border-collapse: collapse;
+			}
+
+			td, th {
+				border: 2px solid #000;
+				text-align: center;
+				padding: 9px;
+			}
+
+			div.container {
+				display: flex;
+				align-itens: center;
+				justify-content: space-around;
+			}
+
+			button {
+				margin-top: 15px;
+				margin-left: 15px;
+				margin-right: 15px;
+			}
+
+			input {
+				margin-top: 15px;
+				margin-left: 15px;
+				margin-right: 15px;
+			}
+		</style>
+
+		<script src="/socket.io/socket.io.js"></script>
+	</head>
+	<body>
+		<div>
+			<center>
+				<a href="/">Home</a>
+				<br>
+				<a href="/loja">Loja</a>
+			</center>
+			<div class="container">
+				<table id="catTable"></table>
+			</div>
+			<br>
+			<div class="container">
+				<form id="add_cat">
+					<input autocomplete="off" id="add_cat_name" placeholder="Nome da categoria">
+					<br>
+					<center>
+					<button>Adicionar</button>
+					</center>
+				</form>
+				<form id="rm_cat">
+					<input autocomplete="off" id="rm_cat_id" placeholder="Id da categoria">
+					<br>
+					<center>
+					<button>Remover</button>
+					</center>
+				</form>
+			</div>
+		</div>	
+
+		<script type="module">
+			import createTable from './../table.js';
+			import startForms from './categorias.js';
+			const socket = io();
+
+			startForms(socket);
+
+			socket.emit('getAllCategorys');
+
+			socket.on('getAll', (rows) => {
+				const $catTable = document.getElementById('catTable');	
+				const { table } = createTable(
+					[
+						['cat_id', 'id'],
+						['cat_name', 'nome']
+					],
+					rows, false
+				);
+			
+				$catTable.innerHTML = table;
+			});
+		</script>
+	</body>
+<html>
